@@ -1,8 +1,14 @@
 # Maintainers: Microsoft Corporation 
-FROM ubuntu:18.04
+FROM ubuntu:20.04
 
 # copy in supervisord conf file
 COPY ./supervisord.conf /usr/local/etc/supervisord.conf
+
+ENV TZ="Asia/Ho_Chi_Minh" \
+    DEBIAN_FRONTEND=noninteractive
+
+RUN apt-get update && \
+    apt-get install -y tzdata
 
 # install supporting packages
 RUN apt-get update && \
@@ -21,10 +27,14 @@ RUN apt-get update && \
                        bzip2 \ 
                        m4 \
                        apt-transport-https \
-                       tzdata \
                        libnuma-dev \
                        libsss-nss-idmap-dev \
-                       software-properties-common
+                       software-properties-common \
+                       python3 \
+                       python3-pip
+
+# Install sentence_transformers package from pip
+RUN pip3 install sentence_transformers
 
 # Adding custom MS repository
 RUN curl https://packages.microsoft.com/keys/microsoft.asc | apt-key add -
@@ -33,8 +43,7 @@ RUN curl https://packages.microsoft.com/config/ubuntu/18.04/mssql-server-2019.li
 # install SQL Server ML services R and Python packages which will also install the mssql-server pacakge, the package for SQL Server itself
 # if you want to install only Python or only R, you can add/remove the package as needed below
 RUN apt-get update && \
-    apt-get install -y mssql-mlservices-packages-r \
-                       mssql-mlservices-packages-py && \
+    apt-get install -y mssql-mlservices-mlm-py && \
     # Cleanup the Dockerfile
     apt-get clean && \
     rm -rf /var/apt/cache/* /tmp/* /var/tmp/* /var/lib/apt/lists

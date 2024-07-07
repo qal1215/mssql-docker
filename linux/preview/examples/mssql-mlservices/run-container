@@ -10,3 +10,5 @@ docker container run \
     --detach \
     mssql-server-mlservices
     
+docker run --name mssql-ml-2 -e 'ACCEPT_EULA=Y' -e 'MSSQL_PID=Developer' -e 'ACCEPT_EULA_ML=Y' -e 'MSSQL_SA_PASSWORD=123@123Abc' -v data_mssql_2:/var/opt/mssql -p 1444:1433 -d mssql-server-mlservices:latest
+    
